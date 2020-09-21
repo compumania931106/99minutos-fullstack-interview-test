@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Req, Res, HttpStatus, Body, Param, Put, NotFoundException, BadRequestException, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Res, HttpStatus, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { PullsService } from './pulls.service';
 import { ModuleRef } from '@nestjs/core';
 import { CreatePullRemoteDTO } from './dto/create-pull-remote.dto';
 import { UpdatePullRemoteDTO } from './dto/update-pull-remote.dto';
 import { CreatePullLocalDTO } from './dto/create-pull-local.dto';
 import { UpdatePullLocalDTO } from './dto/update-pull-local.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 import { GithubWsService } from '../../services/github-ws/github-ws.service';
 
@@ -23,6 +24,7 @@ export class PullsController {
     }
 
     @Get('/')
+    @UseGuards(AuthGuard('jwt'))
     async getAllPull(@Res() res) {
         const data = await this.githubWsService.getAllPulls();
 
@@ -68,11 +70,6 @@ export class PullsController {
                     updatedLocal = true;
                 }
 
-                if (localPull.state !== iterator.state) {
-                    updatedPullLocalDate.state = iterator.state;
-                    updatedLocal = true;
-                }
-
                 if (localPull.closeAt === null && iterator.closed_at !== null) {
                     updatedPullLocalDate.closeAt = iterator.closed_at;
                     updatedLocal = true;
@@ -87,7 +84,6 @@ export class PullsController {
                     const updatedPullLocal = await this.pullsService.updatePull(iterator.id, updatedPullLocalDate);
                 }
 
-
             }
 
         }
@@ -98,18 +94,21 @@ export class PullsController {
     }
 
     @Post('/')
+    @UseGuards(AuthGuard('jwt'))
     async createPullRequest(@Res() res, @Body() createPullRemoteDTO: CreatePullRemoteDTO) {
         const data = await this.githubWsService.createPullRequest(createPullRemoteDTO);
         res.status(HttpStatus.OK).json(data);
     }
     
     @Put('/merge/:numberOfPullRequest')
+    @UseGuards(AuthGuard('jwt'))
     async mergePullRequest(@Res() res, @Param() params) {
         const data = await this.githubWsService.mergePullRequest(params.numberOfPullRequest);
         res.status(HttpStatus.OK).json(data);
     }
 
     @Put('/:numberOfPullRequest')
+    @UseGuards(AuthGuard('jwt'))
     async updatePullRequest(@Res() res, @Param() params, @Body() updatePullRemoteDTO: UpdatePullRemoteDTO) {
         const data = await this.githubWsService.updatePullRequest(params.numberOfPullRequest, updatePullRemoteDTO);
         res.status(HttpStatus.OK).json(data);

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -29,13 +29,13 @@ export class AuthService {
     async validateUserByJwt(payload: JwtPayload) {
 
         // This will be used when the user has already logged in and has a JWT
-        let user: LoginDTO = null;
+        let user: LoginDTO;
 
-        if (payload.username === process.env.USERNAME) {
-            user.username = payload.username;
+        if (payload.username === process.env.APP_USERNAME.toString()) {
+            user = payload;
         }
 
-        if (user) {
+        if (user.username) {
             return this.createJwtPayload(user);
         } else {
             throw new UnauthorizedException();

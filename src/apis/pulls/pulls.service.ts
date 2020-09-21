@@ -26,8 +26,8 @@ export class PullsService {
         return await createdPull.save();
     }
 
-    async updatePull(internalId: number, updatePullLocalDTO: UpdatePullLocalDTO): Promise<Pull> {
-        const updatedPull = await this.pullModel.findOneAndUpdate({ internalId }, updatePullLocalDTO, { new: true }).exec();
+    async updatePull(externalId: number, updatePullLocalDTO: UpdatePullLocalDTO): Promise<Pull> {
+        const updatedPull = await this.pullModel.findOneAndUpdate({ externalId }, updatePullLocalDTO, { new: true }).exec();
         return updatedPull;
     }
 
