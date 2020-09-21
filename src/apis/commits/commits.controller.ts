@@ -21,4 +21,10 @@ export class CommitsController {
         const data = await this.githubWsService.getCommitsByBranch(params.branchName);
         res.status(HttpStatus.OK).json(data);
     }
+
+    @Get('/detail/:ref')
+    async getCommitDetail(@Res() res, @Param() params) {
+        const data = await this.githubWsService.getCommitDetail(params.ref);
+        res.status(HttpStatus.OK).json(data);
+    }
 }

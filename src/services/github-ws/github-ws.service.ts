@@ -42,6 +42,17 @@ export class GithubWsService {
         });
     }
 
+    getCommitDetail(ref: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this._getCommitDetail(ref).subscribe(res => {
+                resolve(res.data);
+            }, error => {
+                console.log(error);
+                reject(new InternalServerErrorException(error.response.data));
+            });
+        });
+    }
+
 
 
 
@@ -72,6 +83,18 @@ export class GithubWsService {
     private _getCommitsByBranch(branchName: string): Observable<AxiosResponse<any>> {
         return this.httpService.get(
             `https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPOSITORY}/commits?sha=${branchName}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'User-Agent': `${process.env.GITHUB_USERNAME}`
+                }
+            }
+        )
+    }
+
+    private _getCommitDetail(ref: string): Observable<AxiosResponse<any>> {
+        return this.httpService.get(
+            `https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPOSITORY}/commits/${ref}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
