@@ -4,6 +4,7 @@ import { AuthModule } from './apis/auth/auth.module';
 import { CommitsModule } from './apis/commits/commits.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BranchesModule } from './apis/branches/branches.module';
+import { PullsModule } from './apis/pulls/pulls.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { BranchesModule } from './apis/branches/branches.module';
     GithubWsModule,
     AuthModule,
     CommitsModule,
-    BranchesModule
+    BranchesModule,
+    PullsModule
   ],
 })
 export class AppModule {}

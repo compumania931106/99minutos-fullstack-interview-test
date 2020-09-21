@@ -27,4 +27,10 @@ export class BranchesController {
         const data = await this.githubWsService.getBranchDetails(params.branchName);
         res.status(HttpStatus.OK).json(data);
     }
+
+    @Get('/compare/:branchBase/:branchHead')
+    async compareTwoBranches(@Res() res, @Param() params) {
+        const data = await this.githubWsService.compareTwoBranches(params.branchBase, params.branchHead);
+        res.status(HttpStatus.OK).json({ status: data.status });
+    }
 }
