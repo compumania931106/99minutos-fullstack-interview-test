@@ -1,4 +1,4 @@
-export class CreatePullDTO {
+export class CreatePullRemoteDTO {
     readonly title?: string;
     readonly body?: string;
     readonly head?: string;

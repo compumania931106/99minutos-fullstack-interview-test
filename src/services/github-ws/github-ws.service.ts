@@ -2,8 +2,8 @@ import { Injectable, HttpService, InternalServerErrorException } from '@nestjs/c
 import { Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
 
-import { CreatePullDTO } from '../../apis/pulls/dto/create-pull.dto';
-import { UpdatePullDTO } from '../../apis/pulls/dto/update-pull.dto';
+import { CreatePullRemoteDTO } from '../../apis/pulls/dto/create-pull-remote.dto';
+import { UpdatePullRemoteDTO } from '../../apis/pulls/dto/update-pull-remote.dto';
 
 @Injectable()
 export class GithubWsService {
@@ -78,9 +78,9 @@ export class GithubWsService {
         });
     }
 
-    createPullRequest(createPullDTO: CreatePullDTO): Promise<any> {
+    createPullRequest(createPullRemoteDTO: CreatePullRemoteDTO): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._createPullRequest(createPullDTO).subscribe(res => {
+            this._createPullRequest(createPullRemoteDTO).subscribe(res => {
                 resolve(res.data);
             }, error => {
                 console.log(error);
@@ -100,9 +100,9 @@ export class GithubWsService {
         });
     }
 
-    updatePullRequest(numberOfPullRequest: number, updatePullDTO: UpdatePullDTO): Promise<any> {
+    updatePullRequest(numberOfPullRequest: number, updatePullRemoteDTO: UpdatePullRemoteDTO): Promise<any> {
         return new Promise((resolve, reject) => {
-            this._updatePullRequest(numberOfPullRequest, updatePullDTO).subscribe(res => {
+            this._updatePullRequest(numberOfPullRequest, updatePullRemoteDTO).subscribe(res => {
                 resolve(res.data);
             }, error => {
                 console.log(error);
@@ -192,10 +192,10 @@ export class GithubWsService {
         )
     }
 
-    private _createPullRequest(createPullDTO: CreatePullDTO): Observable<AxiosResponse<any>> {
+    private _createPullRequest(createPullRemoteDTO: CreatePullRemoteDTO): Observable<AxiosResponse<any>> {
         return this.httpService.post(
             `https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPOSITORY}/pulls`,
-            createPullDTO,
+            createPullRemoteDTO,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -220,10 +220,10 @@ export class GithubWsService {
         )
     }
 
-    private _updatePullRequest(numberOfPullRequest: number, updatePullDTO: UpdatePullDTO): Observable<AxiosResponse<any>> {
+    private _updatePullRequest(numberOfPullRequest: number, updatePullRemoteDTO: UpdatePullRemoteDTO): Observable<AxiosResponse<any>> {
         return this.httpService.patch(
             `https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPOSITORY}/pulls/${numberOfPullRequest}`,
-            updatePullDTO,
+            updatePullRemoteDTO,
             {
                 headers: {
                     'Content-Type': 'application/json',

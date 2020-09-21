@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Req, Res, HttpStatus, Body, Param, Put, NotFoundException, BadRequestException, Delete, UseGuards } from '@nestjs/common';
+import { PullsService } from './pulls.service';
 import { ModuleRef } from '@nestjs/core';
-import { CreatePullDTO } from './dto/create-pull.dto';
+import { CreatePullRemoteDTO } from './dto/create-pull-remote.dto';
+import { UpdatePullRemoteDTO } from './dto/update-pull-remote.dto';
+import { CreatePullLocalDTO } from './dto/create-pull-local.dto';
+import { UpdatePullLocalDTO } from './dto/update-pull-local.dto';
 
 import { GithubWsService } from '../../services/github-ws/github-ws.service';
-import { UpdatePullDTO } from './dto/update-pull.dto';
 
 @Controller('pulls')
 export class PullsController {
@@ -12,6 +15,7 @@ export class PullsController {
 
     constructor(
         private readonly moduleRef: ModuleRef,
+        private pullsService: PullsService,
     ) { }
 
     async onModuleInit() {
@@ -21,12 +25,81 @@ export class PullsController {
     @Get('/')
     async getAllPull(@Res() res) {
         const data = await this.githubWsService.getAllPulls();
-        res.status(HttpStatus.OK).json(data);
+
+        for (const iterator of data) {
+            
+            const localPull = await this.pullsService.getPullByExternalId(iterator.id);
+            
+            if (!localPull) {
+                const pullSavedDate: CreatePullLocalDTO = {
+                    externalId: iterator.id,
+                    numberOfPull: iterator.number,
+                    author: iterator.user.login,
+                    title: iterator.title,
+                    body: iterator.body,
+                    state: iterator.state,
+                    closeAt: iterator.closed_at,
+                    mergedAt: iterator.merged_at
+                };
+
+                const pullSaved = await this.pullsService.createPull(pullSavedDate);
+            } else {
+
+                let updatedPullLocalDate: UpdatePullLocalDTO = {};
+                let updatedLocal: boolean = false;
+
+                if (localPull.author !== iterator.user.login) {
+                    updatedPullLocalDate.author = iterator.user.login;
+                    updatedLocal = true;
+                }
+
+                if (localPull.title !== iterator.title) {
+                    updatedPullLocalDate.title = iterator.title;
+                    updatedLocal = true;
+                }
+
+                if (localPull.body !== iterator.body) {
+                    updatedPullLocalDate.body = iterator.body;
+                    updatedLocal = true;
+                }
+
+                if (localPull.state !== iterator.state) {
+                    updatedPullLocalDate.state = iterator.state;
+                    updatedLocal = true;
+                }
+
+                if (localPull.state !== iterator.state) {
+                    updatedPullLocalDate.state = iterator.state;
+                    updatedLocal = true;
+                }
+
+                if (localPull.closeAt === null && iterator.closed_at !== null) {
+                    updatedPullLocalDate.closeAt = iterator.closed_at;
+                    updatedLocal = true;
+                }
+
+                if (localPull.mergedAt === null && iterator.merged_at !== null) {
+                    updatedPullLocalDate.mergedAt = iterator.merged_at;
+                    updatedLocal = true;
+                }
+
+                if (updatedLocal === true) {
+                    const updatedPullLocal = await this.pullsService.updatePull(iterator.id, updatedPullLocalDate);
+                }
+
+
+            }
+
+        }
+
+        const localPulls = await this.pullsService.getPulls();
+
+        res.status(HttpStatus.OK).json(localPulls);
     }
 
     @Post('/')
-    async createPullRequest(@Res() res, @Body() createPullDTO: CreatePullDTO) {
-        const data = await this.githubWsService.createPullRequest(createPullDTO);
+    async createPullRequest(@Res() res, @Body() createPullRemoteDTO: CreatePullRemoteDTO) {
+        const data = await this.githubWsService.createPullRequest(createPullRemoteDTO);
         res.status(HttpStatus.OK).json(data);
     }
     
@@ -37,8 +110,8 @@ export class PullsController {
     }
 
     @Put('/:numberOfPullRequest')
-    async updatePullRequest(@Res() res, @Param() params, @Body() updatePullDTO: UpdatePullDTO) {
-        const data = await this.githubWsService.updatePullRequest(params.numberOfPullRequest, updatePullDTO);
+    async updatePullRequest(@Res() res, @Param() params, @Body() updatePullRemoteDTO: UpdatePullRemoteDTO) {
+        const data = await this.githubWsService.updatePullRequest(params.numberOfPullRequest, updatePullRemoteDTO);
         res.status(HttpStatus.OK).json(data);
     }
 }
