@@ -12,7 +12,7 @@ export class PullsService {
     constructor(@InjectModel('Pull') private readonly pullModel: Model<Pull>) { }
 
     async getPulls(): Promise<Pull[]> {
-        const pulls = await this.pullModel.find().exec();
+        const pulls = await this.pullModel.find().sort({numberOfPull: -1}).exec();
         return pulls;
     }
 
