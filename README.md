@@ -52,3 +52,33 @@ We also care about being able to run your test without significant effort on our
 If you come across any questions or anything we didn't cover on this README, feel free to reach out to us and we'll get you an answer as soon as possible.
 If you have any question please contact jonathan@99minutos.dev or carlos.ramirez@99minutos.dev
 Happy coding!
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+finished project:
+
+Repo of apiREST: https://github.com/compumania931106/99minutos-fullstack-interview-test
+### to run this apiREST application you need to have installed
+- NodeJS v12
+- NestJS (install it via npm "npm i -g @nestjs/cli")
+- MongoDB v4.4
+
+### instructions to run it (within the project)
+- Create .env file in root of project, this .env file will be delivered to you via email
+- Next in the terminal run "npm i"
+- Next in the terminal "npm run start:dev"
+
+Repo of WebApp: https://github.com/compumania931106/fullstack-interview-test-web
+### to run this Web application you need to have installed
+- NodeJS v12
+- Angular v9.0.6 (install it via npm "npm install -g @angular/cli@9.0.6")
+
+### instructions to run it (within the project)
+- In the terminal run "npm i"
+- Next in the terminal "ng serve"
+
+## Access data
+The access data will be sent in the email
+
+## Live Demo
+https://victormanuelceballoscruz.site
